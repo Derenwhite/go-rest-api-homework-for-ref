@@ -75,7 +75,7 @@ func getTaskID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	_, _ = w.Write(resp)
 }
 
 func deleteTaskID(w http.ResponseWriter, r *http.Request) {
@@ -97,20 +97,18 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 	var task Task
 	var buf bytes.Buffer
 
-	id := chi.URLParam(r, "id")
-
 	_, err := buf.ReadFrom(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err = json.Unmarshal(buf.Bytes(), &tasks); err != nil {
+	if err = json.Unmarshal(buf.Bytes(), &task); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	task, ok := tasks[id]
+	task, ok := tasks[task.ID]
 	if ok {
 		http.Error(w, "Задача уже существует", http.StatusBadRequest)
 		return
